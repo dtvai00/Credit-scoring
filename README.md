@@ -49,7 +49,7 @@ jupyter notebook credit_scoring.ipynb
 ```
 
 ### Данные
-Обучающая и тестовая выборка хранятся на Google Drive
+Обучающая и тестовая выборки хранятся на Google Drive
 https://drive.google.com/drive/folders/1zE12mkEv9r0WQVUWsudMMWrfVTfwDYsu?usp=sharing
 
 ## Основные компоненты
