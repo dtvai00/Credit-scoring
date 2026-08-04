@@ -1,105 +1,105 @@
 # Credit Scoring Model
 
-## Описание проекта
+## Project description
 
-Проект посвящен решению задачи классификации для оценки кредитоспособности заемщиков. На основе набора признаков, характеризующих клиента и его кредитную историю, строится модель машинного обучения для предсказания вероятности дефолта по кредиту.
+This project focuses on solving a binary classification problem for evaluating the creditworthiness of borrowers. Based on a set of features describing the client and their credit history, a machine learning model is built to predict the probability of default on a loan.
 
-### Основные этапы:
-1. **Разведочный анализ данных (EDA)** - анализ распределений, пропусков и корреляций
-2. **Предобработка данных** - очистка, feature engineering, заполнение пропусков
-3. **Подбор гиперпараметров** - оптимизация параметров модели с помощью Optuna
-4. **Построение финальной модели** - обучение CatBoost с оптимальными параметрами
-5. **Анализ важности признаков** - определение ключевых факторов, влияющих на решение о выдаче кредита
+### Main stages:
+1. **Exploratory Data Analysis (EDA)** - analyzing distributions, missing values, and correlations
+2. **Data preprocessing** - cleaning, feature engineering, filling missing values
+3. **Hyperparameter tuning** - optimizing model parameters with Optuna
+4. **Building the final model** - training CatBoost with the best parameters
+5. **Feature importance analysis** - identifying the key factors influencing the loan approval decision
 
-## Структура проекта
+## Project structure
 
 ```
 Shift-ML/
-├── credit_scoring.ipynb           # Основной Jupyter Notebook с полным анализом
-├── shift_ml_2026_train.csv        # Обучающие данные
-├── shift_ml_2026_test.csv         # Тестовые данные
-├── submission.csv                 # Финальные предсказания
-├── requirements.txt               # Зависимости проекта
-└── README.md                      # Документация (этот файл)
+├── credit_scoring.ipynb           # Main Jupyter Notebook with the full analysis
+├── shift_ml_2026_train.csv        # Training data
+├── shift_ml_2026_test.csv         # Test data
+├── submission.csv                 # Final predictions
+├── requirements.txt               # Project dependencies
+└── README.md                      # Documentation (this file)
 ```
 
-## Установка и запуск
+## Installation and running
 
-### Требования
+### Requirements
 - Python 3.8+
 - Jupyter Notebook
-- GPU (опционально, для ускорения обучения CatBoost)
+- GPU (optional, to speed up CatBoost training)
 
-### Установка зависимостей
+### Installing dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-Основные библиотеки:
-- `pandas` - обработка данных
-- `numpy` - численные вычисления
-- `scikit-learn` - инструменты машинного обучения
-- `catboost` - градиентный бустинг
-- `optuna` - гиперпараметрическая оптимизация
-- `matplotlib`, `seaborn` - визуализация
+Main libraries:
+- `pandas` - data processing
+- `numpy` - numerical computations
+- `scikit-learn` - machine learning tools
+- `catboost` - gradient boosting
+- `optuna` - hyperparameter optimization
+- `matplotlib`, `seaborn` - visualization
 
-### Запуск ноутбука
+### Running the notebook
 ```bash
 jupyter notebook credit_scoring.ipynb
 ```
 
-### Данные
-Обучающая и тестовая выборки хранятся на Google Drive
+### Data
+The training and test samples are stored on Google Drive:
 https://drive.google.com/drive/folders/1zE12mkEv9r0WQVUWsudMMWrfVTfwDYsu?usp=sharing
 
-## Основные компоненты
+## Main components
 
-### 1. Разведочный анализ данных (EDA)
+### 1. Exploratory Data Analysis (EDA)
 
-**Анализ пропусков:**
-- Удалены признаки с более 50% пропусков
-- Удалены строки с более 50% пропусков
+**Missing value analysis:**
+- Features with more than 50% missing values were removed
+- Rows with more than 50% missing values were removed
 
-**Анализ корреляций:**
-- Визуализация матрицы корреляций
-- Выявление сильно коррелированных пар (|corr| > 0.95)
-- Исключение одного из коррелированных признаков
+**Correlation analysis:**
+- Correlation matrix visualization
+- Identification of strongly correlated pairs (|corr| > 0.95)
+- Removing one of the correlated features
 
-**Анализ категориальных переменных:**
-- Анализ дисбаланса категорий
-- Выявление редких категорий (встречаемость = 1)
+**Categorical variable analysis:**
+- Category imbalance analysis
+- Identification of rare categories (frequency = 1)
 
-### 2. Предобработка данных
+### 2. Data preprocessing
 
-**Отбор признаков:**
-- Исключены признаки с > 50% пропусков
-- Исключены признаки с дисбалансом категорий (одна категория > 90%)
-- Исключены признаки с высокой корреляцией (> 0.95)
+**Feature selection:**
+- Features with > 50% missing values were removed
+- Features with category imbalance (one category > 90%) were removed
+- Features with high correlation (> 0.95) were removed
 
-**Feature Engineering:**
-- **Стаж (стаж_num)**: преобразование строкового формата в годы (< → 0.5, 10+ → 10)
-- **Дата первого займа**: извлечение года из даты
-- **Профессия заемщика**: 
-  - Кодирование редких профессий (встречаемость = 1) как '1'
-  - Пропуски кодируются как '0'
-  - Применение TargetEncoding для преобразования в числовой вид
+**Feature engineering:**
+- **Experience (experience_num)**: converting string format to years (< → 0.5, 10+ → 10)
+- **Date of the first loan**: extracting the year from the date
+- **Borrower profession**:
+  - Rare professions (frequency = 1) are encoded as '1'
+  - Missing values are encoded as '0'
+  - TargetEncoding is applied to convert them to numeric form
 
-**Обработка пропусков:**
-- Числовые пропуски: заполнение медианой в зависимости от целевой переменной
-- Категориальные пропуски: заполнение модой в зависимости от целевой переменной
+**Missing value handling:**
+- Numeric missing values: filled with the median depending on the target variable
+- Categorical missing values: filled with the mode depending on the target variable
 
-**Сплит данных:**
-- Разделение на обучающую (80%) и валидационную (20%) выборки
-- Стратифицированное разделение по целевой переменной
+**Data split:**
+- Split into training (80%) and validation (20%) sets
+- Stratified split by the target variable
 
-### 3. Построение моделей
+### 3. Model building
 
-**CatBoost с оптимизацией параметров (Optuna):**
-- Оптимизация 9 гиперпараметров (iterations, learning_rate, depth, и др.)
-- 50 итераций оптимизации с ранней остановкой
-- Метрика оптимизации: ROC-AUC на валидационной выборке
+**CatBoost with parameter optimization (Optuna):**
+- Optimization of 9 hyperparameters (iterations, learning_rate, depth, etc.)
+- 50 optimization iterations with early stopping
+- Optimization metric: ROC-AUC on the validation set
 
-**Оптимальные параметры финальной модели:**
+**Optimal parameters of the final model:**
 ```python
 {
     'iterations': 423,
@@ -114,43 +114,43 @@ https://drive.google.com/drive/folders/1zE12mkEv9r0WQVUWsudMMWrfVTfwDYsu?usp=sha
 }
 ```
 
-## Результаты
+## Results
 
-### Метрики качества модели:
-- **ROC-AUC на обучающей выборке**: 0.7792
-- **ROC-AUC на валидационной выборке**: 0.7615
-- **ROC-AUC на тестовой выборке (лидерборд)**: ~0.76
+### Model quality metrics:
+- **ROC-AUC on the training set**: 0.7792
+- **ROC-AUC on the validation set**: 0.7615
+- **ROC-AUC on the test set (leaderboard)**: ~0.76
 
-### Ключевые признаки (по важности):
-1. **допрейтинг** - наибольшее влияние на решение
-2. **сумма_выплат_по_просрочкам** - история нарушений платежей
-3. **рейтинг** - кредитный рейтинг заемщика
-4. **срок_займа** - длительность кредитного договора
-5. **профессия** (TargetEncoding) - профессиональная принадлежность
-6. **сумма_займа** - размер запрашиваемого кредита
+### Key features (by importance):
+1. **doprating** - the strongest influence on the decision
+2. **amount_of_payments_for_overdue_loans** - payment default history
+3. **rating** - borrower credit rating
+4. **loan_term** - duration of the credit agreement
+5. **profession** (TargetEncoding) - professional affiliation
+6. **loan_amount** - size of the requested loan
 
-Признаки с важностью < 0.1 имеют незначительное влияние на модель.
+Features with importance < 0.1 have little influence on the model.
 
-## Выводы
+## Conclusions
 
-1. **Оптимальная конфигурация**: CatBoost показывает лучшие результаты благодаря эффективной обработке категориальных признаков и заполнению пропусков.
+1. **Optimal configuration**: CatBoost shows the best results thanks to effective handling of categorical features and missing value filling.
 
-2. **Качество модели**: Модель достигает ROC-AUC ~0.76 на тестовых данных, что указывает на хорошую способность разделения классов дефолта и без дефолта.
+2. **Model quality**: The model reaches ROC-AUC ~0.76 on test data, indicating good ability to separate default and non-default classes.
 
-3. **Ключевые факторы**: История платежей (допрейтинг, просрочки) и кредитный рейтинг являются наиболее важными факторами при принятии решения о выдаче кредита.
+3. **Key factors**: Payment history (doprating, overdue payments) and credit rating are the most important factors in loan approval decisions.
 
-4. **Обработка данных**: Правильная обработка пропусков (заполнение медианой/модой по целевой переменной) и кодирование категорий (TargetEncoding) существенно влияют на качество модели.
+4. **Data preprocessing**: Proper handling of missing values (median/mode filling by target) and categorical encoding (TargetEncoding) significantly affect model quality.
 
-## Дополнительная информация
+## Additional information
 
-- **Данные**: Проект использует данные конкурса на платформе Shift
-- **Платформа разработки**: Google Colab с использованием GPU для ускорения обучения
-- **Формат результатов**: CSV файл с ID заемщиков и предсказанными вероятностями дефолта
+- **Data**: The project uses data from a competition on the Shift platform
+- **Development platform**: Google Colab using GPU to speed up training
+- **Result format**: A CSV file with borrower IDs and predicted default probabilities
 
-## Автор
-Андрей Дутов
+## Author
+Andrey Dutov
 
-## Лицензия
+## License
 
 MIT License
 
